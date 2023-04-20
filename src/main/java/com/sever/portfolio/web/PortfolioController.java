@@ -8,8 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/portfolio")
 @AllArgsConstructor
@@ -19,32 +17,33 @@ public class PortfolioController {
 
     @GetMapping("/evaluation")
     @ResponseStatus(HttpStatus.OK)
-    public List<Portfolio> getEvaluation() {
-        return portfolioService.getEvaluation();
+    public BaseResponse getEvaluation() {
+        return BaseResponse.createNew(portfolioService.getEvaluation());
     }
 
     @GetMapping("")
     @ResponseStatus(HttpStatus.OK)
-    public List<Portfolio> getAll() {
-        return portfolioService.getAll();
+    public BaseResponse getAll() {
+        return BaseResponse.createNew(portfolioService.getAll());
     }
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    public Portfolio newPortfolio(@RequestBody @Validated Portfolio portfolio) {
-        return portfolioService.newPortfolio(portfolio);
+    public BaseResponse newPortfolio(@RequestBody @Validated Portfolio portfolio) {
+        return BaseResponse.createNew(portfolioService.newPortfolio(portfolio));
     }
 
     @PostMapping("/{id}/item")
     @ResponseStatus(HttpStatus.CREATED)
-    public Portfolio addItem(@PathVariable("id") String id, @RequestBody @Validated PortfolioItem portfolioItem) {
-        return portfolioService.addItem(id,portfolioItem);
+    public BaseResponse addItem(@PathVariable("id") String id, @RequestBody @Validated PortfolioItem portfolioItem) {
+        return BaseResponse.createNew(portfolioService.addItem(id, portfolioItem));
     }
 
     @DeleteMapping("/{id}/item/{item-id}")
     @ResponseStatus(HttpStatus.OK)
-    public void delete(@PathVariable("id") String id, @PathVariable("item-id") String itemId) {
+    public BaseResponse delete(@PathVariable("id") String id, @PathVariable("item-id") String itemId) {
         portfolioService.deleteItem(id, itemId);
+        return BaseResponse.createNew("");
     }
 
 }

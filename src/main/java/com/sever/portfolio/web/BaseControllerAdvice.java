@@ -1,6 +1,5 @@
 package com.sever.portfolio.web;
 
-import com.sever.portfolio.BaseResponse;
 import com.sever.portfolio.exception.BaseException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
