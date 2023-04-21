@@ -1,5 +1,6 @@
 package com.sever.portfolio.service;
 
+import com.sever.portfolio.dto.PortfolioValuesDto;
 import com.sever.portfolio.entity.Portfolio;
 import com.sever.portfolio.entity.PortfolioItem;
 import com.sever.portfolio.entity.PortfolioItemValue;
@@ -9,9 +10,12 @@ import com.sever.portfolio.external.BorsaGundemService;
 import com.sever.portfolio.repository.PortfolioRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +30,7 @@ public class PortfolioServiceImpl implements PortfolioService {
 
     @Override
     public List<Portfolio> getAll() {
-        return getPortfolioRepository().findAll();
+        return getPortfolioRepository().findAll(Sort.by(Sort.Direction.DESC, "createTime"));
     }
 
     @Transactional
@@ -51,7 +55,7 @@ public class PortfolioServiceImpl implements PortfolioService {
         for (Portfolio portfolio : getAll()) {
             Double portfolioCurrentValue = 0d;
             for (PortfolioItem portfolioItem : portfolio.getPortfolioItems()) {
-                PortfolioItemValue portfolioItemValue = borsaGundemService.get(portfolioItem.getCompanyCode());
+                PortfolioItemValue portfolioItemValue = getBorsaGundemService().get(portfolioItem.getCompanyCode());
                 portfolioItemValue.setPortfolioItem(portfolioItem);
                 portfolioItemValue.refreshCurrentValue(portfolioItem.getAmount());
                 portfolioItem.getPortfolioItemValues().add(portfolioItemValue);
@@ -67,6 +71,35 @@ public class PortfolioServiceImpl implements PortfolioService {
         }
 
         return getAll();
+    }
+
+    @Transactional
+    @Override
+    public void delete(String id) {
+        getPortfolioRepository().deleteById(id);
+    }
+
+    @Override
+    public List<PortfolioValuesDto> getValues() {
+        List<PortfolioValuesDto> portfolioValuesDtos = new ArrayList<>();
+        List<Portfolio> portfolios = getAll();
+        for (Portfolio portfolio : portfolios) {
+            Double value = 0d;
+            LocalDateTime valueDate = null;
+            if (portfolio.getPortfolioValues().iterator().hasNext()) {
+                PortfolioValue portfolioValue = portfolio.getPortfolioValues().iterator().next();
+                value = portfolioValue.getCurrentValue();
+                valueDate = portfolioValue.getCreateTime();
+            }
+            PortfolioValuesDto portfolioValuesDto = PortfolioValuesDto.builder()
+                    .name(portfolio.getName())
+                    .value(value)
+                    .createTime(valueDate)
+                    .build();
+
+            portfolioValuesDtos.add(portfolioValuesDto);
+        }
+        return portfolioValuesDtos;
     }
 
     @Transactional

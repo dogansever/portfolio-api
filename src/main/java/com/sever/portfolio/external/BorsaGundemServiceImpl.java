@@ -33,7 +33,7 @@ public class BorsaGundemServiceImpl implements BorsaGundemService {
                 log.info("{}:{}:{}:{}:{}", companyCode, e.getMessage(), "retrying...", retry, host);
                 retry--;
             } catch (Exception e) {
-                log.error("{}:{}:{}", companyCode, "Financial is NOT retrieved.", ExceptionUtil.convertStackTraceToString(e));
+                log.error("{}:{}:{}", companyCode, host, ExceptionUtil.convertStackTraceToString(e));
                 return null;
             }
         }
@@ -42,16 +42,20 @@ public class BorsaGundemServiceImpl implements BorsaGundemService {
 
     @Override
     public PortfolioItemValue get(String companyCode) {
-        Document document = query(companyCode);
-
-        Elements div = document.select("div[class=hisdtl] ul li[class=c1] span");
-        String financialValue = div.get(0).childNodeSize() != 0 ? div.get(0).childNode(1).toString() : "";
         PortfolioItemValue portfolioItemValue = new PortfolioItemValue();
-        portfolioItemValue.setCurrentPrice(NumberUtil.valueOfDouble(financialValue));
+        try {
+            Document document = query(companyCode);
 
-        div = document.select("div[class=hisdtl] ul li[class=c2] span");
-        financialValue = div.get(0).childNodeSize() != 0 ? div.get(0).childNode(0).toString().replace("%", "").trim() : "";
-        portfolioItemValue.setDailyPriceChangePercentage(NumberUtil.valueOfDouble(financialValue));
+            Elements div = document.select("div[class=hisdtl] ul li[class=c1] span");
+            String financialValue = div.get(0).childNodeSize() != 0 ? div.get(0).childNode(1).toString() : "";
+            portfolioItemValue.setCurrentPrice(NumberUtil.valueOfDouble(financialValue));
+
+            div = document.select("div[class=hisdtl] ul li[class=c2] span");
+            financialValue = div.get(0).childNodeSize() != 0 ? div.get(0).childNode(0).toString().replace("%", "").trim() : "";
+            portfolioItemValue.setDailyPriceChangePercentage(NumberUtil.valueOfDouble(financialValue));
+        } catch (Exception e) {
+            log.error("PortfolioItemValue failed for {} {}", companyCode, ExceptionUtil.convertStackTraceToString(e));
+        }
 
         return portfolioItemValue;
     }

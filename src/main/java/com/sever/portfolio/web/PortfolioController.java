@@ -15,6 +15,12 @@ public class PortfolioController {
 
     private final PortfolioService portfolioService;
 
+    @GetMapping("/values")
+    @ResponseStatus(HttpStatus.OK)
+    public BaseResponse getValues() {
+        return BaseResponse.createNew(portfolioService.getValues());
+    }
+
     @GetMapping("/evaluation")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse getEvaluation() {
@@ -46,4 +52,10 @@ public class PortfolioController {
         return BaseResponse.createNew("");
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public BaseResponse delete(@PathVariable("id") String id) {
+        portfolioService.delete(id);
+        return BaseResponse.createNew("");
+    }
 }

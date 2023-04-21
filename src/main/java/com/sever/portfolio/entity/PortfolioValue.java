@@ -18,7 +18,7 @@ import org.hibernate.annotations.Where;
 @ToString(exclude = {"portfolio"})
 public class PortfolioValue extends BaseEntity {
 
-    private Double currentValue;
+    private Double currentValue = 0d;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PORTFOLIO_ID")

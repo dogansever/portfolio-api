@@ -1,5 +1,6 @@
 package com.sever.portfolio.service;
 
+import com.sever.portfolio.dto.PortfolioValuesDto;
 import com.sever.portfolio.entity.Portfolio;
 import com.sever.portfolio.entity.PortfolioItem;
 
@@ -19,4 +20,8 @@ public interface PortfolioService {
     Portfolio newPortfolio(Portfolio portfolio);
 
     List<Portfolio> getEvaluation();
+
+    void delete(String id);
+
+    List<PortfolioValuesDto> getValues();
 }
