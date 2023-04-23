@@ -48,11 +48,12 @@ public class BaseEntity implements Serializable {
     void onPersist() {
         if (createTime == null) {
             createTime = LocalDateTime.now();
+            updateTime = createTime;
         }
     }
 
     @PreUpdate
     void onUpdate() {
-        this.updateTime = LocalDateTime.now();
+        updateTime = LocalDateTime.now();
     }
 }

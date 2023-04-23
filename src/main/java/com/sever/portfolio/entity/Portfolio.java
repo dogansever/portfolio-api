@@ -8,8 +8,8 @@ import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @DynamicUpdate
@@ -25,9 +25,13 @@ public class Portfolio extends BaseEntity {
 
     @OrderBy("createTime desc")
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "portfolio", orphanRemoval = true)
-    private Set<PortfolioItem> portfolioItems = new HashSet<>();
+    private List<PortfolioItem> portfolioItems = new ArrayList<>();
 
     @OrderBy("createTime desc")
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "portfolio", orphanRemoval = true)
-    private Set<PortfolioValue> portfolioValues = new HashSet<>();
+    private List<PortfolioValue> portfolioValues = new ArrayList<>();
+
+    @OrderBy("updateTime desc")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "portfolio", orphanRemoval = true)
+    private List<PortfolioValueTrend> portfolioValueTrends = new ArrayList<>();
 }

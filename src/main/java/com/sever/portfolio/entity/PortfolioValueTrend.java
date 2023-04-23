@@ -8,30 +8,25 @@ import lombok.ToString;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @DynamicUpdate
-@Table(name = "PortfolioItem")
+@Table(name = "PortfolioValueTrend")
 @Data
 @Where(clause = "DELETED = '0'")
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 @JsonIgnoreProperties({"portfolio"})
-@ToString(exclude = {"portfolio", "portfolioItemValues"})
-public class PortfolioItem extends BaseEntity {
+@ToString(exclude = {"portfolio"})
+public class PortfolioValueTrend extends BaseEntity {
 
-    private String companyCode;
+    private UpOrDown trend;
 
-    private Long amount;
-
-    private Double buyPrice;
+    private Integer trendInARow;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PORTFOLIO_ID")
     private Portfolio portfolio;
 
-    @OrderBy("createTime desc")
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "portfolioItem")
-    private List<PortfolioItemValue> portfolioItemValues = new ArrayList<>();
+    public void incrementCurrentTrendInARow() {
+        setTrendInARow(trendInARow + 1);
+    }
 }

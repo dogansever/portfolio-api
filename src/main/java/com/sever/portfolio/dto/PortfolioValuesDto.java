@@ -18,4 +18,5 @@ public class PortfolioValuesDto {
     private String name;
     private Double value;
     private LocalDateTime createTime;
+    private String trend;
 }

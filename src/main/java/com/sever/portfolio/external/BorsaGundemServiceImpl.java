@@ -21,7 +21,7 @@ public class BorsaGundemServiceImpl implements BorsaGundemService {
 
     public Document query(String companyCode) {
         String host = URL_BORSAGUNDEM;
-        host = host.replaceAll("@companyCode", companyCode);
+        host = host.replace("@companyCode", companyCode);
         Document doc = null;
 
         int retry = 3;
@@ -41,7 +41,7 @@ public class BorsaGundemServiceImpl implements BorsaGundemService {
     }
 
     @Override
-    public PortfolioItemValue get(String companyCode) {
+    public PortfolioItemValue getCompanyValue(String companyCode) {
         PortfolioItemValue portfolioItemValue = new PortfolioItemValue();
         try {
             Document document = query(companyCode);
@@ -53,6 +53,8 @@ public class BorsaGundemServiceImpl implements BorsaGundemService {
             div = document.select("div[class=hisdtl] ul li[class=c2] span");
             financialValue = div.get(0).childNodeSize() != 0 ? div.get(0).childNode(0).toString().replace("%", "").trim() : "";
             portfolioItemValue.setDailyPriceChangePercentage(NumberUtil.valueOfDouble(financialValue));
+
+            log.info("PortfolioItemValue run for {} {}", companyCode, portfolioItemValue);
         } catch (Exception e) {
             log.error("PortfolioItemValue failed for {} {}", companyCode, ExceptionUtil.convertStackTraceToString(e));
         }
