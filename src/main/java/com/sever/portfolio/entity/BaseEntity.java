@@ -17,6 +17,7 @@ import java.util.UUID;
 @EqualsAndHashCode(of = {"internalId", "version"})
 public class BaseEntity implements Serializable {
     public static final String DEFAULT_DELETED_VALUE = "0";
+    public static final String DELETED_VALUE = "1";
 
     @Transient
     private String internalId;
@@ -55,5 +56,9 @@ public class BaseEntity implements Serializable {
     @PreUpdate
     void onUpdate() {
         updateTime = LocalDateTime.now();
+    }
+
+    public void markDeleted() {
+        deleted = DELETED_VALUE;
     }
 }

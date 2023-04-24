@@ -5,11 +5,13 @@ import com.sever.portfolio.entity.*;
 import com.sever.portfolio.exception.AssertionUtil;
 import com.sever.portfolio.exception.BaseException;
 import com.sever.portfolio.external.BorsaGundemService;
+import com.sever.portfolio.repository.CompanyValueRepository;
 import com.sever.portfolio.repository.PortfolioRepository;
 import com.sever.portfolio.util.ExceptionUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 public class PortfolioServiceImpl implements PortfolioService {
 
     private final PortfolioRepository portfolioRepository;
+    private final CompanyValueRepository companyValueRepository;
     private final BorsaGundemService borsaGundemService;
 
     @Override
@@ -52,18 +55,22 @@ public class PortfolioServiceImpl implements PortfolioService {
 
     @Transactional
     @Override
-    public List<Portfolio> getEvaluation() {
-        for (Portfolio portfolio : getAll()) {
-            getEvaluation(portfolio);
-        }
-
+    public List<Portfolio> calculatePortfolioEvaluations() {
+        getAll().stream().forEach(this::calculatePortfolioEvaluation);
+        deleteAllCompanyValues();
         return getAll();
     }
 
-    private void getEvaluation(Portfolio portfolio) {
+    private void deleteAllCompanyValues() {
+        List<CompanyValue> companyValues = getCompanyValueRepository().findAll();
+        companyValues.stream().forEach(BaseEntity::markDeleted);
+        getCompanyValueRepository().saveAll(companyValues);
+    }
+
+    private void calculatePortfolioEvaluation(Portfolio portfolio) {
         try {
             Double portfolioCurrentValue = createPortfolioItemValues(portfolio);
-            updatePortfolioValueTrend(portfolio, portfolioCurrentValue);
+            createOrUpdatePortfolioValueTrend(portfolio, portfolioCurrentValue);
             createPortfolioValue(portfolio, portfolioCurrentValue);
             getPortfolioRepository().save(portfolio);
         } catch (BaseException e) {
@@ -75,13 +82,32 @@ public class PortfolioServiceImpl implements PortfolioService {
         AssertionUtil.assertDataNotFound(portfolio.getPortfolioItems());
         Double portfolioCurrentValue = 0d;
         for (PortfolioItem portfolioItem : portfolio.getPortfolioItems()) {
-            PortfolioItemValue portfolioItemValue = getBorsaGundemService().getCompanyValue(portfolioItem.getCompanyCode());
+            CompanyValue companyValue = createCompanyValue(portfolioItem);
+
+            PortfolioItemValue portfolioItemValue = new PortfolioItemValue();
             portfolioItemValue.setPortfolioItem(portfolioItem);
-            portfolioItemValue.refreshCurrentValue(portfolioItem.getAmount());
+            portfolioItemValue.setCurrentPrice(companyValue.getCurrentPrice());
+            portfolioItemValue.setDailyPriceChangePercentage(companyValue.getDailyPriceChangePercentage());
+            portfolioItemValue.refreshCurrentValue();
             portfolioItem.getPortfolioItemValues().add(portfolioItemValue);
             portfolioCurrentValue += portfolioItemValue.getCurrentValue();
         }
         return portfolioCurrentValue;
+    }
+
+    private CompanyValue createCompanyValue(PortfolioItem portfolioItem) {
+        CompanyValue companyValueExample = new CompanyValue();
+        companyValueExample.setCompanyCode(portfolioItem.getCompanyCode());
+        Optional<CompanyValue> optionalCompanyValue = getCompanyValueRepository().findOne(Example.of(companyValueExample));
+
+        CompanyValue companyValue;
+        if (optionalCompanyValue.isPresent()) {
+            companyValue = optionalCompanyValue.get();
+        } else {
+            companyValue = getBorsaGundemService().getCompanyValue(portfolioItem.getCompanyCode());
+            getCompanyValueRepository().save(companyValue);
+        }
+        return companyValue;
     }
 
     private void createPortfolioValue(Portfolio portfolio, Double portfolioCurrentValue) {
@@ -91,29 +117,32 @@ public class PortfolioServiceImpl implements PortfolioService {
         portfolio.getPortfolioValues().add(portfolioValue);
     }
 
-    private void updatePortfolioValueTrend(Portfolio portfolio, Double portfolioCurrentValue) {
-        PortfolioValue portfolioValueLast = portfolio.getPortfolioValues().get(portfolio.getPortfolioValues().size() - 1);
-        if (portfolioCurrentValue.doubleValue() != portfolioValueLast.getCurrentValue().doubleValue()) {
-            UpOrDown currentTrend = portfolioCurrentValue > portfolioValueLast.getCurrentValue() ? UpOrDown.UP : UpOrDown.DOWN;
+    private void createOrUpdatePortfolioValueTrend(Portfolio portfolio, Double portfolioCurrentValue) {
+        PortfolioValue portfolioValueLatest = portfolio.getPortfolioValues().get(0);
+        if (portfolioCurrentValue.doubleValue() != portfolioValueLatest.getCurrentValue().doubleValue()) {
+            UpOrDown currentTrend = portfolioCurrentValue > portfolioValueLatest.getCurrentValue() ? UpOrDown.UP : UpOrDown.DOWN;
             if (portfolio.getPortfolioValueTrends().isEmpty()) {
-                addNewPortfolioValueTrend(portfolio, currentTrend);
+                createPortfolioValueTrend(portfolio, currentTrend);
             } else {
-                PortfolioValueTrend portfolioValueTrendLast = portfolio.getPortfolioValueTrends().get(portfolio.getPortfolioValueTrends().size() - 1);
-                if (portfolioValueTrendLast.getTrend().equals(currentTrend)) {
-                    portfolioValueTrendLast.incrementCurrentTrendInARow();
+                PortfolioValueTrend portfolioValueTrendLatest = portfolio.getPortfolioValueTrends().get(0);
+                if (portfolioValueTrendLatest.getTrend().equals(currentTrend)) {
+                    portfolioValueTrendLatest.incrementCurrentTrendInARow();
+                    log.info("PortfolioValueTrend for {} is {} {}", portfolio.getName(), portfolioValueTrendLatest.getTrend(), portfolioValueTrendLatest.getTrendInARow());
                 } else {
-                    addNewPortfolioValueTrend(portfolio, currentTrend);
+                    createPortfolioValueTrend(portfolio, currentTrend);
                 }
             }
         }
     }
 
-    private void addNewPortfolioValueTrend(Portfolio portfolio, UpOrDown currentTrend) {
+    private void createPortfolioValueTrend(Portfolio portfolio, UpOrDown currentTrend) {
         PortfolioValueTrend portfolioValueTrend = new PortfolioValueTrend();
         portfolioValueTrend.setPortfolio(portfolio);
         portfolioValueTrend.setTrend(currentTrend);
         portfolioValueTrend.setTrendInARow(1);
         portfolio.getPortfolioValueTrends().add(portfolioValueTrend);
+        log.info("PortfolioValueTrend for {} is {} {}", portfolio.getName(), portfolioValueTrend.getTrend(), portfolioValueTrend.getTrendInARow());
+
     }
 
     @Transactional

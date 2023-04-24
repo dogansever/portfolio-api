@@ -10,25 +10,18 @@ import org.hibernate.annotations.Where;
 
 @Entity
 @DynamicUpdate
-@Table(name = "PortfolioItemValue")
+@Table(name = "CompanyValue")
 @Data
 @Where(clause = "DELETED = '0'")
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
-@JsonIgnoreProperties({"portfolioItem"})
-@ToString(exclude = {"portfolioItem"})
-public class PortfolioItemValue extends BaseEntity {
+@JsonIgnoreProperties({""})
+@ToString(exclude = {""})
+public class CompanyValue extends BaseEntity {
+
+    private String companyCode;
 
     private Double currentPrice;
 
     private Double dailyPriceChangePercentage;
 
-    private Double currentValue;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PORTFOLIO_ITEM_ID")
-    private PortfolioItem portfolioItem;
-
-    public void refreshCurrentValue() {
-        setCurrentValue(portfolioItem.getAmount() * getCurrentPrice());
-    }
 }

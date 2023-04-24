@@ -1,7 +1,7 @@
 package com.sever.portfolio.external;
 
-import com.sever.portfolio.entity.PortfolioItemValue;
+import com.sever.portfolio.entity.CompanyValue;
 
 public interface BorsaGundemService {
-    PortfolioItemValue getCompanyValue(String companyCode);
+    CompanyValue getCompanyValue(String companyCode);
 }

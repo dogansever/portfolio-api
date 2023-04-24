@@ -56,7 +56,7 @@ class PortfolioServiceImplTest {
         portfolioItemValue.setCurrentPrice(31.50d);
         Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(portfolioItemValue);
 
-        portfolioService.getEvaluation();
+        portfolioService.calculatePortfolioEvaluations();
 
         ArgumentCaptor<Portfolio> portfolioArgumentCaptor = ArgumentCaptor.forClass(Portfolio.class);
         verify(portfolioRepository).save(portfolioArgumentCaptor.capture());
@@ -97,7 +97,7 @@ class PortfolioServiceImplTest {
         portfolioItemValue.setCurrentPrice(31.50d);
         Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(portfolioItemValue);
 
-        portfolioService.getEvaluation();
+        portfolioService.calculatePortfolioEvaluations();
 
         ArgumentCaptor<Portfolio> portfolioArgumentCaptor = ArgumentCaptor.forClass(Portfolio.class);
         verify(portfolioRepository).save(portfolioArgumentCaptor.capture());
@@ -136,7 +136,7 @@ class PortfolioServiceImplTest {
         portfolioItemValue.setCurrentPrice(29.50d);
         Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(portfolioItemValue);
 
-        portfolioService.getEvaluation();
+        portfolioService.calculatePortfolioEvaluations();
 
         ArgumentCaptor<Portfolio> portfolioArgumentCaptor = ArgumentCaptor.forClass(Portfolio.class);
         verify(portfolioRepository).save(portfolioArgumentCaptor.capture());
@@ -170,7 +170,7 @@ class PortfolioServiceImplTest {
         portfolioItemValue.setCurrentPrice(29.50d);
         Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(portfolioItemValue);
 
-        portfolioService.getEvaluation();
+        portfolioService.calculatePortfolioEvaluations();
 
         ArgumentCaptor<Portfolio> portfolioArgumentCaptor = ArgumentCaptor.forClass(Portfolio.class);
         verify(portfolioRepository).save(portfolioArgumentCaptor.capture());
@@ -211,7 +211,7 @@ class PortfolioServiceImplTest {
         portfolioItemValue.setCurrentPrice(29.50d);
         Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(portfolioItemValue);
 
-        portfolioService.getEvaluation();
+        portfolioService.calculatePortfolioEvaluations();
 
         ArgumentCaptor<Portfolio> portfolioArgumentCaptor = ArgumentCaptor.forClass(Portfolio.class);
         verify(portfolioRepository).save(portfolioArgumentCaptor.capture());
@@ -250,7 +250,7 @@ class PortfolioServiceImplTest {
         portfolioItemValue.setCurrentPrice(31.50d);
         Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(portfolioItemValue);
 
-        portfolioService.getEvaluation();
+        portfolioService.calculatePortfolioEvaluations();
 
         ArgumentCaptor<Portfolio> portfolioArgumentCaptor = ArgumentCaptor.forClass(Portfolio.class);
         verify(portfolioRepository).save(portfolioArgumentCaptor.capture());

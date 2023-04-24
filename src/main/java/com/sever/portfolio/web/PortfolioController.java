@@ -24,7 +24,7 @@ public class PortfolioController {
     @GetMapping("/evaluation")
     @ResponseStatus(HttpStatus.OK)
     public BaseResponse getEvaluation() {
-        return BaseResponse.createNew(portfolioService.getEvaluation());
+        return BaseResponse.createNew(portfolioService.calculatePortfolioEvaluations());
     }
 
     @GetMapping("")

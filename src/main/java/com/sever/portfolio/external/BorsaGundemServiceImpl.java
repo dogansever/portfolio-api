@@ -1,6 +1,6 @@
 package com.sever.portfolio.external;
 
-import com.sever.portfolio.entity.PortfolioItemValue;
+import com.sever.portfolio.entity.CompanyValue;
 import com.sever.portfolio.util.ExceptionUtil;
 import com.sever.portfolio.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -41,24 +41,25 @@ public class BorsaGundemServiceImpl implements BorsaGundemService {
     }
 
     @Override
-    public PortfolioItemValue getCompanyValue(String companyCode) {
-        PortfolioItemValue portfolioItemValue = new PortfolioItemValue();
+    public CompanyValue getCompanyValue(String companyCode) {
+        CompanyValue companyValue = new CompanyValue();
+        companyValue.setCompanyCode(companyCode);
         try {
             Document document = query(companyCode);
 
             Elements div = document.select("div[class=hisdtl] ul li[class=c1] span");
             String financialValue = div.get(0).childNodeSize() != 0 ? div.get(0).childNode(1).toString() : "";
-            portfolioItemValue.setCurrentPrice(NumberUtil.valueOfDouble(financialValue));
+            companyValue.setCurrentPrice(NumberUtil.valueOfDouble(financialValue));
 
             div = document.select("div[class=hisdtl] ul li[class=c2] span");
             financialValue = div.get(0).childNodeSize() != 0 ? div.get(0).childNode(0).toString().replace("%", "").trim() : "";
-            portfolioItemValue.setDailyPriceChangePercentage(NumberUtil.valueOfDouble(financialValue));
+            companyValue.setDailyPriceChangePercentage(NumberUtil.valueOfDouble(financialValue));
 
-            log.info("PortfolioItemValue run for {} {}", companyCode, portfolioItemValue);
+            log.info("CompanyValue run for {} {}", companyCode, companyValue);
         } catch (Exception e) {
-            log.error("PortfolioItemValue failed for {} {}", companyCode, ExceptionUtil.convertStackTraceToString(e));
+            log.error("CompanyValue failed for {} {}", companyCode, ExceptionUtil.convertStackTraceToString(e));
         }
 
-        return portfolioItemValue;
+        return companyValue;
     }
 }

@@ -19,7 +19,7 @@ public interface PortfolioService {
 
     Portfolio newPortfolio(Portfolio portfolio);
 
-    List<Portfolio> getEvaluation();
+    List<Portfolio> calculatePortfolioEvaluations();
 
     void delete(String id);
 
