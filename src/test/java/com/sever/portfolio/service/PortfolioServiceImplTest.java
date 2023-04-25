@@ -2,6 +2,7 @@ package com.sever.portfolio.service;
 
 import com.sever.portfolio.entity.*;
 import com.sever.portfolio.external.BorsaGundemService;
+import com.sever.portfolio.repository.CompanyValueRepository;
 import com.sever.portfolio.repository.PortfolioRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +34,9 @@ class PortfolioServiceImplTest {
     @Mock
     BorsaGundemService borsaGundemService;
 
+    @Mock
+    CompanyValueRepository companyValueRepository;
+
     @DisplayName("Trend UP")
     @Test
     void getEvaluation_01() {
@@ -52,9 +56,9 @@ class PortfolioServiceImplTest {
 
         Mockito.when(portfolioRepository.findAll(Sort.by(Sort.Direction.DESC, "createTime"))).thenReturn(portfolioList);
 
-        PortfolioItemValue portfolioItemValue = new PortfolioItemValue();
-        portfolioItemValue.setCurrentPrice(31.50d);
-        Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(portfolioItemValue);
+        CompanyValue companyValue = new CompanyValue();
+        companyValue.setCurrentPrice(31.50d);
+        Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(companyValue);
 
         portfolioService.calculatePortfolioEvaluations();
 
@@ -93,9 +97,9 @@ class PortfolioServiceImplTest {
 
         Mockito.when(portfolioRepository.findAll(Sort.by(Sort.Direction.DESC, "createTime"))).thenReturn(portfolioList);
 
-        PortfolioItemValue portfolioItemValue = new PortfolioItemValue();
-        portfolioItemValue.setCurrentPrice(31.50d);
-        Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(portfolioItemValue);
+        CompanyValue companyValue = new CompanyValue();
+        companyValue.setCurrentPrice(31.50d);
+        Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(companyValue);
 
         portfolioService.calculatePortfolioEvaluations();
 
@@ -132,9 +136,9 @@ class PortfolioServiceImplTest {
 
         Mockito.when(portfolioRepository.findAll(Sort.by(Sort.Direction.DESC, "createTime"))).thenReturn(portfolioList);
 
-        PortfolioItemValue portfolioItemValue = new PortfolioItemValue();
-        portfolioItemValue.setCurrentPrice(29.50d);
-        Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(portfolioItemValue);
+        CompanyValue companyValue = new CompanyValue();
+        companyValue.setCurrentPrice(29.50d);
+        Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(companyValue);
 
         portfolioService.calculatePortfolioEvaluations();
 
@@ -166,9 +170,9 @@ class PortfolioServiceImplTest {
 
         Mockito.when(portfolioRepository.findAll(Sort.by(Sort.Direction.DESC, "createTime"))).thenReturn(portfolioList);
 
-        PortfolioItemValue portfolioItemValue = new PortfolioItemValue();
-        portfolioItemValue.setCurrentPrice(29.50d);
-        Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(portfolioItemValue);
+        CompanyValue companyValue = new CompanyValue();
+        companyValue.setCurrentPrice(29.50d);
+        Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(companyValue);
 
         portfolioService.calculatePortfolioEvaluations();
 
@@ -207,9 +211,9 @@ class PortfolioServiceImplTest {
 
         Mockito.when(portfolioRepository.findAll(Sort.by(Sort.Direction.DESC, "createTime"))).thenReturn(portfolioList);
 
-        PortfolioItemValue portfolioItemValue = new PortfolioItemValue();
-        portfolioItemValue.setCurrentPrice(29.50d);
-        Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(portfolioItemValue);
+        CompanyValue companyValue = new CompanyValue();
+        companyValue.setCurrentPrice(29.50d);
+        Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(companyValue);
 
         portfolioService.calculatePortfolioEvaluations();
 
@@ -246,9 +250,9 @@ class PortfolioServiceImplTest {
 
         Mockito.when(portfolioRepository.findAll(Sort.by(Sort.Direction.DESC, "createTime"))).thenReturn(portfolioList);
 
-        PortfolioItemValue portfolioItemValue = new PortfolioItemValue();
-        portfolioItemValue.setCurrentPrice(31.50d);
-        Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(portfolioItemValue);
+        CompanyValue companyValue = new CompanyValue();
+        companyValue.setCurrentPrice(31.50d);
+        Mockito.when(borsaGundemService.getCompanyValue(anyString())).thenReturn(companyValue);
 
         portfolioService.calculatePortfolioEvaluations();
 

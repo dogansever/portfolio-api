@@ -17,7 +17,7 @@ import java.net.SocketTimeoutException;
 @Component("BorsaGundemService")
 public class BorsaGundemServiceImpl implements BorsaGundemService {
 
-    public static final String URL_BORSAGUNDEM = "https://www.borsagundem.com/piyasa-ekrani/hisse-detay/@companyCode";
+    public static final String URL_BORSAGUNDEM = "https://www.oyakyatirim.com.tr/hisse-detay/@companyCode";
 
     public Document query(String companyCode) {
         String host = URL_BORSAGUNDEM;
@@ -47,12 +47,11 @@ public class BorsaGundemServiceImpl implements BorsaGundemService {
         try {
             Document document = query(companyCode);
 
-            Elements div = document.select("div[class=hisdtl] ul li[class=c1] span");
-            String financialValue = div.get(0).childNodeSize() != 0 ? div.get(0).childNode(1).toString() : "";
+            Elements div = document.select("h2 p span");
+            String financialValue = div.get(0).childNodeSize() != 0 ? div.get(0).childNode(0).toString().trim() : "";
             companyValue.setCurrentPrice(NumberUtil.valueOfDouble(financialValue));
 
-            div = document.select("div[class=hisdtl] ul li[class=c2] span");
-            financialValue = div.get(0).childNodeSize() != 0 ? div.get(0).childNode(0).toString().replace("%", "").trim() : "";
+            financialValue = div.get(1).childNodeSize() != 0 ? div.get(1).childNode(0).toString().replace("%", "").trim() : "";
             companyValue.setDailyPriceChangePercentage(NumberUtil.valueOfDouble(financialValue));
 
             log.info("CompanyValue run for {} {}", companyCode, companyValue);
