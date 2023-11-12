@@ -34,4 +34,6 @@ public class PortfolioItem extends BaseEntity {
     @OrderBy("createTime desc")
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "portfolioItem")
     private List<PortfolioItemValue> portfolioItemValues = new ArrayList<>();
+
+    //todo PortfolioItemValueTrend
 }

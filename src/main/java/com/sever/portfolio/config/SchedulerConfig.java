@@ -15,7 +15,7 @@ public class SchedulerConfig {
 
     private final PortfolioService portfolioService;
 
-    @Scheduled(cron = "0 0 20 * * MON-FRI", zone = "GMT+3")
+    @Scheduled(cron = "0 0 22 * * MON-FRI", zone = "GMT+3")
     public void getEvaluation() {
         log.info("getEvaluation started...");
         portfolioService.calculatePortfolioEvaluations();
